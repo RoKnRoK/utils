@@ -10,6 +10,7 @@
     <modules>
         <module>SyllableGenerator</module>
         <module>UserPassGenerator</module>
+        <module>InsertScriptGenerator</module>
     </modules>
     <packaging>pom</packaging>
 
