@@ -63,7 +63,7 @@ public class DBValuesGenerator {
         Class enumClass = config.getEnumClass();
         Object[] enumConstants = enumClass.getEnumConstants();
         int ind = (int) (Math.random() * 100) % enumConstants.length;
-        return enumConstants[ind].toString();
+        return "'" + enumConstants[ind].toString() + "'";
     }
 
     private static String generateStringValue(StringValueGenerationConfig config) {
@@ -72,6 +72,6 @@ public class DBValuesGenerator {
         for (int i = 0; i < randomLength; i++) {
             result.append(SyllableGenerator.nextSyllable());
         }
-        return result.toString();
+        return "'" + result.toString() + "'";
     }
 }
