@@ -1,5 +1,7 @@
 package com.rok.misc.utils.config;
 
+import com.rok.misc.utils.ValueType;
+
 public class StringValueGenerationConfig implements ValueGenerationConfig {
 
     private int minSyllables, maxSyllables;
@@ -15,5 +17,9 @@ public class StringValueGenerationConfig implements ValueGenerationConfig {
 
     public int getMaxSyllables() {
         return maxSyllables;
+    }
+
+    public ValueType getValueType() {
+        return ValueType.STRING;
     }
 }

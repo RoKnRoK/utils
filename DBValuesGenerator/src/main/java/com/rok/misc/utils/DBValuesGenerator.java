@@ -1,10 +1,15 @@
 package com.rok.misc.utils;
 
+import com.rok.misc.utils.config.DateValueGenerationConfig;
 import com.rok.misc.utils.config.EnumeratedValueGenerationConfig;
 import com.rok.misc.utils.config.StringValueGenerationConfig;
 import com.rok.misc.utils.config.ValueGenerationConfig;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by RoK.
@@ -12,8 +17,8 @@ import java.util.Iterator;
  */
 public class DBValuesGenerator {
 
-    public static Iterator<String[]> generateValuesIterator(final int count, final ValueType[] types, final ValueGenerationConfig[] configs) {
-        return new Iterator<String[]> () {
+    public static Iterator<String[]> generateValuesIterator(final int count, final ValueGenerationConfig[] configs) {
+        return new Iterator<String[]>() {
             private int totalCount = -1;
             private int currentCount = 0;
 
@@ -28,32 +33,37 @@ public class DBValuesGenerator {
 
             public String[] next() {
                 currentCount++;
-                return DBValuesGenerator.generateValuesArray(types, configs);
+                return DBValuesGenerator.generateValuesArray(configs);
             }
 
             public void remove() {
                 //as this is dynamically generated collection, nothing to remove
             }
 
-            public void setTotalCount(int totalCount){
+            public void setTotalCount(int totalCount) {
                 this.totalCount = totalCount;
             }
         };
     }
 
 
-    private static String[] generateValuesArray(ValueType[] types, ValueGenerationConfig[] configs) {
-        int length = types.length;
+    private static String[] generateValuesArray(ValueGenerationConfig[] configs) {
+        int length = configs.length;
         String[] values = new String[length];
         for (int i = 0; i < length; i++) {
-            ValueType valueType = types[i];
+            ValueType valueType = configs[i].getValueType();
             switch (valueType) {
                 case STRING: {
                     values[i] = generateStringValue((StringValueGenerationConfig) configs[i]);
-                } break;
+                }
+                break;
                 case ENUMERATED: {
                     values[i] = generateEnumeratedValue((EnumeratedValueGenerationConfig) configs[i]);
-                } break;
+                }
+                break;
+                case DATE: {
+                    values[i] = generateDateValue((DateValueGenerationConfig) configs[i]);
+                }
             }
         }
         return values;
@@ -73,5 +83,20 @@ public class DBValuesGenerator {
             result.append(SyllableGenerator.nextSyllable());
         }
         return "'" + result.toString() + "'";
+    }
+
+    private static String generateDateValue(DateValueGenerationConfig config) {
+        long startMillis = config.getStartDate().getTime();
+        long endMillis = config.getEndDate().getTime();
+        long randomMillis = ThreadLocalRandom.current().nextLong(startMillis, endMillis);
+
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(randomMillis);
+
+        DateFormat dateFormat = new SimpleDateFormat(config.getDatePattern());
+        dateFormat.setCalendar(calendar);
+
+        return "'" + dateFormat.format(calendar.getTime()) + "'";
     }
 }
